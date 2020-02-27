@@ -1,37 +1,61 @@
 \documentclass[a4paper, 10pt, oneside]{article}
 \renewcommand{\familydefault}{\sfdefault}
+
+\usepackage{titling}
+\usepackage{anyfontsize}
+
 %---------------------------------------------------------------------------------
 %------------------------- Set the variables for the Mainpage here ---------------
 %---------------------------------------------------------------------------------
 \newcommand{\name}{John Doe}
 \newcommand{\email}{john@doe.com}
 \newcommand{\osid}{OS-11111}
+\newcommand{\version}{v.1.1}
 
 %---------------------------------------------------------------------------------
 %------------------------- Include the list of used packages ---------------------
 %---------------------------------------------------------------------------------
 \input{packages.tex}
-
 %---------------------------------------------------------------------------------
 %------------------------- Create title page -------------------------------------
 %---------------------------------------------------------------------------------
-\title{{\textbf{\Huge Offensive Security}}\\ Penetration Test Report for\\Internal Lab and Exam}
-\author{\vspace{3cm}\\{\LARGE \name}\\[1em]\email\\[1em]OSID: \osid}
+\title{{\textbf{\fontsize{40}{48}\selectfont Offensive Security}}\fontsize{32}{36}\selectfont\\ Penetration Test Report for\\Internal Lab and Exam}
+\author{\vspace{0.5cm}\\[0.2em]\large\email\\[0.5em]\Large OSID: \osid \vspace{1.7cm}}
 \date{\vspace{7cm}\today}
-
-
+\date{\Large $\copyright$ \\[1em] \small All rights reserved to Offensive Security, 2016\\[0.5em] No part of this publication, in whole or in part, may be reproduced, copied, transferred or any other right reserved to its copyright owner, including photocopying and all other copying, any transfer or transmission using any network or other means of communication, any broadcast for distant learning, in any form or by any means such as any information storage, transmission or retrieval system, without prior written permission from Offensive Security.
+}
+\pretitle{%
+  \begin{center}
+  \LARGE
+}
+\posttitle{
+  \par\noindent\rule{\textwidth}{0.6pt}
+  \normalsize
+  \\[0.2em] \version
+  \end{center}
+}
+\preauthor{%
+  \begin{center}
+  \LARGE
+}
+\postauthor{
+  \end{center}
+  \begin{center}
+  \LARGE
+  \includegraphics [width=0.5\textwidth]{./images/title_offsec.png}
+  \end{center}
+}
 \begin{document}
 %---------------------------------------------------------------------------------
 %------------------------- Print title page --------------------------------------
 %---------------------------------------------------------------------------------
-\maketitle
 \thispagestyle{empty}
+\maketitle
 %---------------------------------------------------------------------------------
 %------------------------- Print table of contents -------------------------------
 %---------------------------------------------------------------------------------
 % Attention: Document might need some runs to get all indexes etc right .. usual LaTeX stuff :)
 \tableofcontents
-\thispagestyle{empty}
 \pagebreak
 
 %---------------------------------------------------------------------------------

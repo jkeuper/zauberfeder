@@ -1,5 +1,8 @@
 %Seitenränder definieren
-\usepackage[right=4.0cm,left=3.3cm, bottom=3.9cm, top=4.1cm, footskip=2.1cm, headsep=2.0cm]{geometry}
+\usepackage[right=2.75cm,left=2.75cm, bottom=2.5cm, top=4.5cm, headsep=0.5cm, headheight=2.5cm]{geometry}
+%\usepackage[right=2.75cm,left=2.75cm, bottom=2.5cm, top=6.0cm, footskip=2.1cm, headsep=0.5cm, headheight=1.5cm]{geometry}
+%\usepackage[right=2.75cm,left=2.75cm, bottom=3.9cm, top=4.0cm, footskip=2.1cm, headsep=0.0cm, headheight=2.5cm]{geometry}
+%\usepackage[right=2.75cm,left=2.75cm, bottom=3.9cm, top=2.1cm, footskip=2.1cm, voffset=3.5cm, headheight=2.0cm, headsep=0.5cm]{geometry}
 \usepackage[utf8x]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{palatino}
@@ -29,7 +32,7 @@
 \usepackage{blindtext}
 \titleformat{\chapter}
 {\normalfont\LARGE}
-{\makebox[3pc][l]{\LARGE\thechapter\hfil\rule[-6pt]{0.5pt}{2pc}}}
+{\makebox[3pc][l]{\LARGE}}
 {0pt}
 {\LARGE}
 \titlespacing*{\chapter}{0pt}{0pt}{82pt}
@@ -124,10 +127,14 @@
 \fancypagestyle{plain}{}
 \fancyhf{}
 \fancyfoot{} % clear all footer fields
+\fancyhead{} % clear all footer fields
 
-\fancyhead[R]{\small{\leftmark}}
-\fancyhead[L]{\small{Offensive Security - Penetration Test Report}}
+%\fancyhead[R]{\small{\leftmark}}
+\fancyhead{
+  \includegraphics [width=1.0\textwidth]{./images/header_offsec.png}
+}
 \renewcommand{\sectionmark}[1]{\markboth{#1}{}}
 
-\renewcommand{\footrulewidth}{0.1pt} % Create a rule above the page number
+\renewcommand{\footrulewidth}{0.0pt} % Create a rule above the page number
+\renewcommand{\headrulewidth}{0.0pt} 
 \fancyfoot[R]{\textcolor{color1}\thepage  \textcolor{color2}{/\pageref{LastPage}}}

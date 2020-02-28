@@ -1,0 +1,90 @@
+\section{High-Level Summary}
+{\fullname} was tasked with performing an internal penetration test towards Offensive Security Labs.
+An internal penetration test is a dedicated attack against internally connected systems. The focus of this
+test is to perform attacks, similar to those of a hacker and attempt to infiltrate Offensive Security’s
+internal lab systems – the THINC.local domain. \firstname’s overall objective was to evaluate the network,
+identify systems, and exploit flaws while reporting the findings back to Offensive Security.
+\\\\
+When performing the internal penetration test, there were several alarming vulnerabilities that were
+identified on Offensive Security’s network. When performing the attacks, {\firstname} was able to gain access
+to multiple machines, primarily due to outdated patches and poor security configurations. During the
+testing, {\firstname} had administrative level access to multiple systems. All systems were successfully
+exploited and local access granted. Some machines were granted root/administrator access. These
+systems as well as a brief description on how access was obtained are listed below:
+
+\begin{itemize}
+\item \ipA – Got in through \vulnxA
+\ifdefined\gotB\item \ipB – Got in through \vulnxB
+\ifdefined\gotC
+\item \ipC – Got in through \vulnxC
+\ifdefined\gotD
+\item \ipD – Got in through \vulnxD
+\ifdefined\gotE
+\item \ipE – Got in through \vulnxE
+\fi
+\fi
+\fi
+\fi
+\end{itemize}
+
+\subsection{Recommendations}
+{\firstname} recommends patching the vulnerabilities identified during the testing to ensure that an attacker
+cannot exploit these systems in the future. One thing to remember is that these systems require
+frequent patching and once patched, should remain on a regular patch program to protect additional
+vulnerabilities that are discovered at a later date. Developing your own software is a big risk. Let you
+developers be more security aware and have the software and source code audited by security
+specialists.
+
+\section{Methodologies}
+{\firstname} utilized a widely adopted approach to performing penetration testing that is effective in testing
+how well the Offensive Security Exam environments are secure. Below is a breakout of how {\firstname} was
+able to identify and exploit the variety of systems and includes all individual vulnerabilities found.
+
+\subsection{Information Gathering}
+The information gathering portion of a penetration test focuses on identifying the scope of the
+penetration test. During this penetration test, {\firstname} was tasked with exploiting the lab and exam
+network. The specific IP addresses were:
+
+\paragraph{Network:}
+\ipaddresses
+
+\subsection{Service Enumeration}
+The service enumeration portion of a penetration test focuses on gathering information about what
+services are alive on a system or systems. This is valuable for an attacker as it provides detailed
+information on potential attack vectors into a system. Understanding what applications are running on
+the system gives an attacker needed information before performing the actual penetration test. In
+some cases, some ports may not be listed.
+
+\begin{table}[h]
+  %\begin{tabular}{|c|c|}
+  \begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{IP Address} & \textbf{Open ports} \\\hline
+    \ipA                & \textbf{TCP:} \tcpportsA{}  \\
+                        & \textbf{UDP:} \udpportsA{}  \\\hline
+\ifdefined\gotB
+    \ipB                & \textbf{TCP:} \tcpportsB{}  \\
+                        & \textbf{UDP:} \udpportsB{}  \\\hline
+\ifdefined\gotC
+    \ipC                & \textbf{TCP:} \tcpportsC{}  \\
+                        & \textbf{UDP:} \udpportsC{}  \\\hline
+\ifdefined\gotD
+    \ipD                & \textbf{TCP:} \tcpportsD{}  \\
+                        & \textbf{UDP:} \udpportsD{}  \\\hline
+\ifdefined\gotE
+    \ipE                & \textbf{TCP:} \tcpportsE{}  \\
+                        & \textbf{UDP:} \udpportsE{}  \\\hline
+\fi
+\fi
+\fi
+\fi
+  \end{tabularx}
+  \caption{Service enumeration}
+\end{table}
+
+\subsection{Penetration}
+The penetration testing portions of the assessment focus heavily on gaining access to a variety of
+systems. During this penetration test, {\firstname} was able to successfully gain access to 
+{\machinecount} out of the {\machinecount} systems. On {\rootedcount} out of the {\machinecount} 
+machines, {\firstname} gained root/administrator privileges.
+

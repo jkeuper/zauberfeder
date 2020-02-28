@@ -1,4 +1,5 @@
 # Source: https://github.com/github/gitignore/blob/master/TeX.gitignore
+*.gen.tex
 
 ## Core latex/pdflatex auxiliary files:
 *.aux

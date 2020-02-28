@@ -3,14 +3,54 @@
 
 \usepackage{titling}
 \usepackage{anyfontsize}
+\usepackage{tabularx}
+
+%---------------------------------------------------------------------------------
+%------------------------- Declaring the empty variables for the hosts -----------
+%---------------------------------------------------------------------------------
+\newcommand{\hostname}{}
+\newcommand{\ip}{}
+\newcommand{\tcpports}{} 
+\newcommand{\udpports}{} 
+\newcommand{\os}{}
+\newcommand{\vuln}{}
+\newcommand{\product}{}
+\newcommand{\vulnx}{}
+\newcommand{\productx}{}
+
+\newcommand{\fullname}{}
+\newcommand{\firstname}{}
+\newcommand{\osid}{}
+\newcommand{\email}{}
+\newcommand{\version}{}
+\newcommand{\ipaddresses}{}
+\newcommand{\ipA}{}
+\newcommand{\ipB}{}
+\newcommand{\ipC}{}
+\newcommand{\ipD}{}
+\newcommand{\ipE}{}
+\newcommand{\vulnxA}{}
+\newcommand{\vulnxB}{}
+\newcommand{\vulnxC}{}
+\newcommand{\vulnxD}{}
+\newcommand{\vulnxE}{}
+\newcommand{\tcpportsA}{}
+\newcommand{\udpportsA}{}
+\newcommand{\tcpportsB}{}
+\newcommand{\udpportsB}{}
+\newcommand{\tcpportsC}{}
+\newcommand{\udpportsC}{}
+\newcommand{\tcpportsD}{}
+\newcommand{\udpportsD}{}
+\newcommand{\tcpportsE}{}
+\newcommand{\udpportsE}{}
+\newcommand{\machinecount}{}
+\newcommand{\rootedcount}{}
 
 %---------------------------------------------------------------------------------
 %------------------------- Set the variables for the Mainpage here ---------------
 %---------------------------------------------------------------------------------
-\newcommand{\name}{John Doe}
-\newcommand{\email}{john@doe.com}
-\newcommand{\osid}{OS-11111}
-\newcommand{\version}{v.1.1}
+\input{./out/settings.tex}
 
 %---------------------------------------------------------------------------------
 %------------------------- Include the list of used packages ---------------------
@@ -59,23 +99,13 @@
 \pagebreak
 
 %---------------------------------------------------------------------------------
-%------------------------- Declaring the empty variables for the hosts -----------
-%---------------------------------------------------------------------------------
-\newcommand{\hostname}{}
-\newcommand{\ip}{}
-\newcommand{\tcpports}{} 
-\newcommand{\udpports}{} 
-\newcommand{\os}{}
-\newcommand{\vuln}{}
-\newcommand{\product}{}
-\newcommand{\vulnx}{}
-\newcommand{\productx}{}
-
-%---------------------------------------------------------------------------------
 %------------ Here are the hosts, ------------------------------------------------
 %------------ just add in the same scheme after you coppied the example folder ---
 %---------------------------------------------------------------------------------
-\input{./hosts/example/host.tex}
-\input{./hosts/DeepThought/host.tex}
+\input{./templates/intro.tex}
+\input{./out/hosts.tex}
+
+% \input{./hosts/example/host.tex}
+% \input{./hosts/DeepThought/host.tex}
 
 \end{document}

@@ -6,6 +6,8 @@ While doing the machine the documentation goes into the markdown file.
 Not so much as a template for what the report should contain, but for not
 being bothered by fiddling with layout thingies _especially_ in Word.
 
+You can check the latest sample report here: [maindocument.pdf](maindocument.pdf)
+
 ## Documenting a new host for the report
 
 1. Create a subfolder with the name of the machine
@@ -22,13 +24,20 @@ severity: 'Critical'
 rooted: true
 ---
 ```
-4. Write your report, using headers "##", code blocks and images. 
+4. If applicable, create a local.md (for priv esc)
+5. Give a header like:
+```
+---
+vulnx: 'SomeWebService <= 1.3.3 Directory Traversal RCE (CVE-2001-10000)
+---
+```
+6. Write your report, using headers "##", code blocks and images. 
 (TODO: hyperlinks, bold/italic/red, ...)
-5. Update your user info in the settings.md in the root of the project.
-6. Add the new machine to hosts in the settings.md.
-7. Run generate.py
-8. Run pdflatex maindocument.tex
-9. Check your pdf!
+7. Update your user info in the settings.md in the root of the project.
+8. Add the new machine to hosts in the settings.md.
+9. Run generate.py
+10. Run pdflatex maindocument.tex
+11. Check your pdf!
 
 ## Notes
 Using different headers, e.g. "#", "##" and "###", does results in 
@@ -42,7 +51,7 @@ following content below the header.
 ## Todo
 Add support for hyperlinks, bold/italic and RED markings in code blocks!
 
-Supports up to 5 machines now. Should be using loops in LaTeX...
+Supports up to 10 machines now. Should be using loops in LaTeX...
 
 Update the fonts to match the OSCP report.
 

@@ -98,6 +98,8 @@ def needsHighlight(codeLine, highlights):
 def parseMarkdown(host, ip, vulnx, content, outfile):
     buf = ""
     foundCodeStart = False
+    foundListStart = False
+    listEnd = ""
     with open(outfile, "w+") as out:
         para = readTemplate("vulnx")
         para = para.replace("<TITLE>", "Vulnerability Exploited:")
@@ -136,6 +138,28 @@ def parseMarkdown(host, ip, vulnx, content, outfile):
                 else:
                     buf += line + "\n"
                 continue
+
+
+            if re.search("^[0-9]+\. |^[*+\-] ", line.strip(" ")):
+                if not foundListStart:
+                    foundListStart = True
+                    if re.search("^[0-9]\. ", line.strip(" ")):
+                        print "Matched 1"
+                        out.write("\\begin{enumerate}\n")
+                        listEnd = "\\end{enumerate}"
+                    else:
+                        print "Matched *"
+                        out.write("\\begin{itemize}\n")
+                        listEnd = "\\end{itemize}"
+
+                out.write("\\item "+escapeLatex(re.sub("^[0-9]+\. |^[\*\+\-] ", "", line.strip(" ").strip(" "))))
+                continue
+
+            if foundListStart:
+                if line.lower().startswith("#"):
+                    out.write(listEnd + "\n")
+                    foundListStart = False
+
             if line.lower().startswith("#"):
                 if ":" in line:
                     para = readTemplate("para_inline")
@@ -162,7 +186,12 @@ def parseMarkdown(host, ip, vulnx, content, outfile):
                 out.write(image + "\n")
                 continue
             
-            if not line.strip(" ") == "":
+            if foundListStart:
+                print "Almost done, finishing up list"
+                if line.strip(" ") == "":
+                    out.write(listEnd + "\n")
+                    foundListStart = False
+            elif not line.strip(" ") == "":
                 if lineCounter >= 1 and lastWasPlainText + 2 == lineCounter and content[lineCounter - 1].strip(" ") == "":
                     out.write("\\\\[0.5em]\n")
                 lastWasPlainText = lineCounter

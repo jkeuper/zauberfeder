@@ -48,8 +48,17 @@ Using a ":" in the header, makes a difference in layout. With ":" the
 content will directly follow the header. Not using a ":", will put the
 following content below the header.
 
+Highlight lines with red in code blocks by specifying the line nubers
+directly after the three backticks to start the code section. For example
+to mark line 1, 3 to 5 and 10:
+```
+{1,3-5,10}
+```
+
 ## Todo
-Add support for hyperlinks, bold/italic and RED markings in code blocks!
+Add support for hyperlinks, bold/italic.
+
+Nested lists
 
 Supports up to 10 machines now. Should be using loops in LaTeX...
 

@@ -13,14 +13,30 @@ exploited and local access granted. Some machines were granted root/administrato
 systems as well as a brief description on how access was obtained are listed below:
 
 \begin{itemize}
-\item \ipA – Got in through \vulnxA
-\ifdefined\gotB\item \ipB – Got in through \vulnxB
+\item {\ipA} – Got in through {\vulnxA}
+\ifdefined\gotB
+\item {\ipB} – Got in through {\vulnxB}
 \ifdefined\gotC
-\item \ipC – Got in through \vulnxC
+\item {\ipC} – Got in through {\vulnxC}
 \ifdefined\gotD
-\item \ipD – Got in through \vulnxD
+\item {\ipD} – Got in through {\vulnxD}
 \ifdefined\gotE
-\item \ipE – Got in through \vulnxE
+\item {\ipE} – Got in through {\vulnxE}
+\ifdefined\gotF
+\item {\ipF} – Got in through {\vulnxF}
+\ifdefined\gotG
+\item {\ipG} – Got in through {\vulnxG}
+\ifdefined\gotH
+\item {\ipH} – Got in through {\vulnxH}
+\ifdefined\gotI
+\item {\ipI} – Got in through {\vulnxI}
+\ifdefined\gotJ
+\item {\ipJ} – Got in through {\vulnxJ}
+\fi
+\fi
+\fi
+\fi
+\fi
 \fi
 \fi
 \fi
@@ -74,6 +90,26 @@ some cases, some ports may not be listed.
 \ifdefined\gotE
     \ipE                & \textbf{TCP:} \tcpportsE{}  \\
                         & \textbf{UDP:} \udpportsE{}  \\\hline
+\ifdefined\gotF
+    \ipF                & \textbf{TCP:} \tcpportsF{}  \\
+                        & \textbf{UDP:} \udpportsF{}  \\\hline
+\ifdefined\gotG
+    \ipG                & \textbf{TCP:} \tcpportsG{}  \\
+                        & \textbf{UDP:} \udpportsG{}  \\\hline
+\ifdefined\gotH
+    \ipH                & \textbf{TCP:} \tcpportsH{}  \\
+                        & \textbf{UDP:} \udpportsH{}  \\\hline
+\ifdefined\gotI
+    \ipI                & \textbf{TCP:} \tcpportsI{}  \\
+                        & \textbf{UDP:} \udpportsI{}  \\\hline
+\ifdefined\gotJ
+    \ipJ                & \textbf{TCP:} \tcpportsJ{}  \\
+                        & \textbf{UDP:} \udpportsJ{}  \\\hline
+\fi
+\fi
+\fi
+\fi
+\fi
 \fi
 \fi
 \fi

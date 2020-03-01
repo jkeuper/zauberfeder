@@ -77,12 +77,13 @@
 \definecolor{mygreen}{rgb}{0,0.6,0}
 \definecolor{mygray}{rgb}{0.5,0.5,0.5}
 \definecolor{myblue}{rgb}{0.0, 0.53, 0.74}
-\definecolor{codebackground}{rgb}{0.8, 0.8, 0.8}
+\definecolor{codebackground}{rgb}{0.9, 0.9, 0.9}
+\definecolor{code}{rgb}{0, 0, 0}
 \definecolor{codechanged}{rgb}{0.8, 0.0, 0.0}
 
 \lstset{ %
   backgroundcolor=\color{codebackground},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
-  basicstyle={\small\fontfamily{fvm}\fontseries{m}\selectfont},       % the size of the fonts that are used for the code
+  basicstyle={\small\fontfamily{fvm}\fontseries{m}\selectfont\color{code}},       % the size of the fonts that are used for the code
   breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
   breaklines=true,                 % sets automatic line breaking
   captionpos=b,                    % sets the caption-position to bottom
@@ -107,9 +108,10 @@
 % stringstyle=\color{mymauve},     % string literal style
   tabsize=4,	                   % sets default tabsize to 4 spaces
 % title=\lstname,                  % show the filename of files included with \lstinputlisting; also try caption instead of title
-  moredelim=**[is][\color{codechanged}]{**@}{@**}, %Rot für Änderungen
-  moredelim=**[is][\color{myblue}]{***@}{@***}, %einfaches blau
-  moredelim=**[is][\color{mygreen}]{*@}{@*},%einfaches Grün
+  moredelim=**[is][\color{codechanged}]{**LINECHANGED@}{@LINECHANGED**}, %Rot für Änderungen
+%  moredelim=**[is][\color{codechanged}]{**@}{@**}, %Rot für Änderungen
+%  moredelim=**[is][\color{myblue}]{***@}{@***}, %einfaches blau
+%  moredelim=**[is][\color{mygreen}]{*@}{@*},%einfaches Grün
 }
 
 %Aktives Inhaltsverzeichnis und links

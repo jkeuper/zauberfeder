@@ -6,6 +6,7 @@ templatesPath = "./templates/"
 import os
 import re
 import subprocess
+import HTMLParser
 
 def getValue(line):
     index = line.index(":")
@@ -49,22 +50,67 @@ class Settings:
                 elif line.lower().startswith("hosts"):
                     self._hosts = [x.strip() for x in getValue(line).split(",")]
 
-def parseMarkdown(host, ip, vulnx, content):
-    outfile = os.path.join(hostsPath, host, "host.gen.tex")
+def parseHightlights(line):
+    res = []
+    try:
+        line = line.strip('` ')
+        if "{" in line and "}" in line:
+            ranges = line[line.index('{')+1:line.index('}')]
+            ranges = ranges.replace(" ", "")
+            for range in ranges.split(","):
+                if "-" in range:
+                    parts = range.split("-")
+                    res.append((int(parts[0]), int(parts[1])))
+                else:
+                    res.append((int(range),))
+    except:
+        print "WARNING: parsing code highlighting failed!"
+        print line
+    
+    return res
+
+def escapeLatex(line):
+    html = HTMLParser.HTMLParser()
+    line = html.unescape(line)
+    # \& \% \$ \# \_ \{ \}
+    line = line.replace("&", "\\&")
+    line = line.replace("%", "\\%")
+    line = line.replace("$", "\\$")
+    line = line.replace("#", "\\#")
+    line = line.replace("_", "\\_")
+    line = line.replace("{", "\\{")
+    line = line.replace("}", "\\}")
+
+    return line
+
+
+def needsHighlight(codeLine, highlights):
+    for highlight in highlights:
+        if len(highlight) == 1:
+            if codeLine == highlight[0]:
+                return True
+        else:
+            if highlight[0] <= codeLine and codeLine <= highlight[1]:
+                return True
+
+    return False
+
+def parseMarkdown(host, ip, vulnx, content, outfile):
     buf = ""
     foundCodeStart = False
     with open(outfile, "w+") as out:
         para = readTemplate("vulnx")
         para = para.replace("<TITLE>", "Vulnerability Exploited:")
-        para = para.replace("<CONTENT>", vulnx)
+        para = para.replace("<CONTENT>", escapeLatex(vulnx))
         out.write(para + "\n")
 
         para = readTemplate("para_inline")
         para = para.replace("<TITLE>", "Sytem Vulnerable:")
-        para = para.replace("<CONTENT>", ip)
+        para = para.replace("<CONTENT>", escapeLatex(ip))
         out.write(para + "\n")
 
         lineCounter = -1
+        codeLineCounter = -1
         lastWasPlainText = -1
         for line in content:
             lineCounter += 1
@@ -72,26 +118,33 @@ def parseMarkdown(host, ip, vulnx, content):
             if line.startswith("```"):
                 if not foundCodeStart:
                     foundCodeStart = True
+                    codeLineCounter = 0
+                    highlights = parseHightlights(line)
                     continue
                 else:
                     code = readTemplate("code")
                     code = code.replace("<CODE>", buf.strip(" \n"))
                     out.write(code + "\n")
                     foundCodeStart = False
+                    codeLineCounter = -1
                     buf = ""
                     continue
             if foundCodeStart:
-                buf += line + "\n"
+                codeLineCounter += 1 # please please note, line numbers are ONE based, not ZERO!
+                if needsHighlight(codeLineCounter, highlights):
+                    buf += "**LINECHANGED@" + line + "@LINECHANGED**"+ "\n"
+                else:
+                    buf += line + "\n"
                 continue
             if line.lower().startswith("#"):
                 if ":" in line:
                     para = readTemplate("para_inline")
                     parts = line.strip(" #").split(":")
-                    para = para.replace("<TITLE>", parts[0].strip(" #"))
-                    para = para.replace("<CONTENT>", parts[1].strip(" #"))
+                    para = para.replace("<TITLE>", escapeLatex(parts[0].strip(" #")))
+                    para = para.replace("<CONTENT>", escapeLatex(parts[1].strip(" #")))
                 else:
                     para = readTemplate("para")
-                    para = para.replace("<TITLE>", line.strip(" #"))
+                    para = para.replace("<TITLE>", escapeLatex(line.strip(" #")))
 
                 out.write(para + "\n")
                 continue
@@ -101,7 +154,7 @@ def parseMarkdown(host, ip, vulnx, content):
                 else:
                     image = readTemplate("image_ca[t]")
                     capt = re.split("\[|\]", line)[1]
-                    image = image.replace("<CAPTION>", capt.strip(" "))
+                    image = image.replace("<CAPTION>", escapeLatex(capt.strip(" ")))
 
                 path = re.split("\(|\)", line)[1]
                 path = os.path.join(hostsPath, host, path.strip(" "))
@@ -113,7 +166,7 @@ def parseMarkdown(host, ip, vulnx, content):
                 if lineCounter >= 1 and lastWasPlainText + 2 == lineCounter and content[lineCounter - 1].strip(" ") == "":
                     out.write("\\\\[0.5em]\n")
                 lastWasPlainText = lineCounter
-                out.write(line.strip(" ") + "\n")
+                out.write(escapeLatex(line.strip(" ")) + "\n")
 
 
 def writeFiles(settings, hosts):
@@ -122,6 +175,9 @@ def writeFiles(settings, hosts):
 
     index = 64
     ipaddresses = []
+
+    if not os.path.exists("out"):
+        os.makedirs("out")
 
     with open("out/hosts.tex","w+") as outhosts:
         with open("out/settings.tex","w+") as out:
@@ -136,7 +192,7 @@ def writeFiles(settings, hosts):
                 index += 1
         
                 textfile = os.path.join(hostsPath, host, "host.md")
-                genfile = os.path.join(hostsPath, host, "host.gen.tex")
+                genfile = os.path.join("out", host+".gen.tex")
                 
                 outhosts.write("\\input{"+genfile+"}\n")
                 out.write("\\def\\got"+chr(index)+"{}\n")
@@ -158,14 +214,12 @@ def writeFiles(settings, hosts):
                             continue
                         if  line.startswith("---"):
                             rest = content[linecount:]
-                            parseMarkdown(host, ipaddress, vulnx, rest)
+                            parseMarkdown(host, ipaddress, vulnx, rest, genfile)
                             break
                         if line.lower().startswith("ip"):
                             ipaddress = getValue(line)
                             out.write("\\renewcommand{\\ip"+chr(index)+"}{" + ipaddress + "}\n")
                             ipaddresses.append(ipaddress)
-                        #if line.lower().startswith("hostname"):
-                        #    print line
                         if line.lower().startswith("tcpports"):
                             out.write("\\renewcommand{\\tcpports"+chr(index)+"}{" + getValue(line) + "}\n")
                         if line.lower().startswith("udpports"):
@@ -173,11 +227,34 @@ def writeFiles(settings, hosts):
                         if line.lower().startswith("vulnx"):
                             vulnx = getValue(line)
                             out.write("\\renewcommand{\\vulnx"+chr(index)+"}{" + vulnx + "}\n")
-                        #if line.lower().startswith("severity"):
-                        #    print line
                         if line.lower().startswith("rooted"):
                             rootedcount += 1
-    
+
+                textfile = os.path.join(hostsPath, host, "local.md")
+                genfile = os.path.join("out", host+"_local.gen.tex")
+                vulnx = ""
+                foundStart = False
+                if os.path.exists(textfile):
+                    outhosts.write("\\input{"+genfile+"}\n")
+                    with open(textfile) as f:
+                        content = f.readlines()
+                        # remove whitespace characters like `\n` at the end of each line
+                        content = [x.strip() for x in content]
+                        linecount = 0           
+                        for line in content:
+                            linecount += 1
+                            if not foundStart and line.startswith("---"):
+                                foundStart = True
+                                continue
+                            if not foundStart:
+                                continue
+                            if  line.startswith("---"):
+                                rest = content[linecount:]
+                                parseMarkdown(host, ipaddress, vulnx, rest, genfile)
+                                break
+                            if line.lower().startswith("vulnx"):
+                                vulnx = getValue(line)
+        
             out.write("\\renewcommand{\\machinecount}{" + str(machinecount) + "}\n")
             out.write("\\renewcommand{\\rootedcount}{" + str(rootedcount) + "}\n")
             out.write("\\renewcommand{\\ipaddresses}{" + (", ".join(ipaddresses)) + "}\n")

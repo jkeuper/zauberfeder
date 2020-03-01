@@ -1,10 +1,8 @@
 ---
-hostname: 'example'
 ip: '10.11.1.1'
 tcpports: '1, 2, 3, 4'
 udpports: '5, 6, 7, 8'
-vulnx: 'SomeWebService <= 1.3.3 Directory Traversal RCE (CVE-2001-10000)
-severity: 'Critical'
+vulnx: 'SomeWebService &lt;= 1.3.3 Directory Traversal RCE (CVE-2001-10000)'
 rooted: true
 ---
 
@@ -25,10 +23,11 @@ shell should connect to. See marked in red below.
 The exploit can be found here:
 https://www.exploitdb.com/exploits/1337
 
-```
+```{4}
 #!/bin/bash
 echo argument 1: $1
 echo argument 2: $2
+ping -c 5 127.0.0.1
 echo all arguments: $@
 ```
 
@@ -69,9 +68,11 @@ Nmap done: 1 IP address (1 host up) scanned in 107.01 seconds
 Raw packets sent: 85444 (3.760MB) | Rcvd: 74052 (2.979M
 ```
 ## Check the robots.txt
+Checking the robots.txt on the server, reveals some interesting urls.
 ![](screenshot.png)
 
 ## Check the url /SomeWebService/
+The url /SomeWebService/ reveals a very interesting web application.
 ![](screenshot.png)
 
 ## Check version
@@ -88,11 +89,13 @@ https://www.exploit-db.com/exploits/1337
 
 ## Exploiting:
 We setup a reverse shell and trigger the following url:
+
 http://10.11.1.1/SomeWebService/?flux=GimmeReverseShell
+
 Which results in a reverse shell connecting back to our machine
 ![](screenshot.png)
 
-## Proof
+## Local Proof
+The reverse shell alows us to retrieve the local.txt file.
 ![](screenshot.png)
-
 

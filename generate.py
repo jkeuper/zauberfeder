@@ -17,7 +17,7 @@ def readTemplate(name):
     with open(templatefile) as f:
         content = f.readlines()
         # remove whitespace characters like `\n` at the end of each line
-        content = [x.strip() for x in content]
+        content = [x.strip("\n") for x in content]
         return "\n".join(content)
 
 class Settings:
@@ -25,7 +25,7 @@ class Settings:
         with open(textfile) as f:
             content = f.readlines()
             # remove whitespace characters like `\n` at the end of each line
-            content = [x.strip() for x in content]
+            content = [x.strip("\n") for x in content]
 
             foundStart = False
             for line in content:
@@ -83,7 +83,6 @@ def escapeLatex(line):
 
     return line
 
-
 def needsHighlight(codeLine, highlights):
     for highlight in highlights:
         if len(highlight) == 1:
@@ -95,11 +94,44 @@ def needsHighlight(codeLine, highlights):
 
     return False
 
+def parseLists(content):
+    firstItem = content[0]
+    prefix = firstItem[0:len(firstItem) - len(firstItem.lstrip())]
+    isOrderedList = False
+    listTemplate = "unorderedlist"
+    liChar = firstItem[len(prefix)][0] 
+    regexString = "^" + prefix + "\\" + liChar + " "
+
+    if liChar.isdigit():
+        regexString = "^" + prefix + "[0-9]+\. "
+        isOrderedList = True
+        listTemplate = "orderedlist"
+
+    result = ""
+    subList = []
+    for line in content:
+        if re.search(regexString, line):
+            if len(subList) > 0:
+                result += parseLists(subList) + "\n"
+                subList = []
+
+            liTemplate = readTemplate("listitem")
+            li = re.sub(regexString, "", line)
+            result += liTemplate.replace("<CONTENT>", escapeLatex(li)) + "\n"
+        else:
+            subList.append(line)
+
+    if len(subList) > 0:
+        result += parseLists(subList)
+
+    template = readTemplate(listTemplate)
+    return template.replace("<CONTENT>", result.strip())
+
 def parseMarkdown(host, ip, vulnx, content, outfile):
     buf = ""
+    bufArr = []
     foundCodeStart = False
     foundListStart = False
-    listEnd = ""
     with open(outfile, "w+") as out:
         para = readTemplate("vulnx")
         para = para.replace("<TITLE>", "Vulnerability Exploited:")
@@ -143,21 +175,14 @@ def parseMarkdown(host, ip, vulnx, content, outfile):
             if re.search("^[0-9]+\. |^[*+\-] ", line.strip(" ")):
                 if not foundListStart:
                     foundListStart = True
-                    if re.search("^[0-9]\. ", line.strip(" ")):
-                        print "Matched 1"
-                        out.write("\\begin{enumerate}\n")
-                        listEnd = "\\end{enumerate}"
-                    else:
-                        print "Matched *"
-                        out.write("\\begin{itemize}\n")
-                        listEnd = "\\end{itemize}"
-
-                out.write("\\item "+escapeLatex(re.sub("^[0-9]+\. |^[\*\+\-] ", "", line.strip(" ").strip(" "))))
+                    bufArr = []
+                bufArr.append(line)
                 continue
 
             if foundListStart:
                 if line.lower().startswith("#"):
-                    out.write(listEnd + "\n")
+                    lists = parseLists(bufArr)
+                    out.write(lists + "\n")
                     foundListStart = False
 
             if line.lower().startswith("#"):
@@ -187,9 +212,9 @@ def parseMarkdown(host, ip, vulnx, content, outfile):
                 continue
             
             if foundListStart:
-                print "Almost done, finishing up list"
                 if line.strip(" ") == "":
-                    out.write(listEnd + "\n")
+                    lists = parseLists(bufArr)
+                    out.write(lists + "\n")
                     foundListStart = False
             elif not line.strip(" ") == "":
                 if lineCounter >= 1 and lastWasPlainText + 2 == lineCounter and content[lineCounter - 1].strip(" ") == "":
@@ -232,7 +257,7 @@ def writeFiles(settings, hosts):
                 with open(textfile) as f:
                     content = f.readlines()
                     # remove whitespace characters like `\n` at the end of each line
-                    content = [x.strip() for x in content]
+                    content = [x.strip("\n") for x in content]
                     linecount = 0           
                     for line in content:
                         linecount += 1
@@ -268,7 +293,7 @@ def writeFiles(settings, hosts):
                     with open(textfile) as f:
                         content = f.readlines()
                         # remove whitespace characters like `\n` at the end of each line
-                        content = [x.strip() for x in content]
+                        content = [x.strip("\n") for x in content]
                         linecount = 0           
                         for line in content:
                             linecount += 1

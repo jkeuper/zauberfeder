@@ -58,8 +58,6 @@ to mark line 1, 3 to 5 and 10:
 ## Todo
 Add support for hyperlinks, bold/italic.
 
-Nested lists
-
 Supports up to 10 machines now. Should be using loops in LaTeX...
 
 Update the fonts to match the OSCP report.

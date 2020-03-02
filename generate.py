@@ -69,7 +69,7 @@ def parseHightlights(line):
     
     return res
 
-def escapeLatex(line):
+def escapeAndSimpleFormat(line):
     html = HTMLParser.HTMLParser()
     line = html.unescape(line)
     # \& \% \$ \# \_ \{ \}
@@ -77,9 +77,31 @@ def escapeLatex(line):
     line = line.replace("%", "\\%")
     line = line.replace("$", "\\$")
     line = line.replace("#", "\\#")
-    line = line.replace("_", "\\_")
     line = line.replace("{", "\\{")
     line = line.replace("}", "\\}")
+
+    if re.search(" [*_]+[A-Z-a-z0-9]", line):
+        splitted = re.split("\.| ", line)
+        for word in splitted:
+            prefix = word[0:len(word)-len(word.lstrip("*_"))]
+            if prefix == "":
+                continue
+            if word.endswith(prefix):
+                if len(prefix) == 1:
+                    line = line.replace(word, "\\textit{"+word[1:-1]+"}")
+                elif len(prefix) == 2:
+                    line = line.replace(word, "\\textbf{"+word[2:-2]+"}")
+            else:
+                if len(prefix) == 1:
+                    line = line.replace(word, "\\textit{"+word[1:])
+                elif len(prefix) == 2:
+                    line = line.replace(word, "\\textbf{"+word[2:])
+
+                for subword in splitted:
+                    if subword.endswith(prefix):
+                        line = line.replace(subword, subword[0:-1*len(prefix)]+"}")
+
+    line = line.replace("_", "\\_")
 
     return line
 
@@ -117,7 +139,7 @@ def parseLists(content):
 
             liTemplate = readTemplate("listitem")
             li = re.sub(regexString, "", line)
-            result += liTemplate.replace("<CONTENT>", escapeLatex(li)) + "\n"
+            result += liTemplate.replace("<CONTENT>", escapeAndSimpleFormat(li)) + "\n"
         else:
             subList.append(line)
 
@@ -135,12 +157,12 @@ def parseMarkdown(host, ip, vulnx, content, outfile):
     with open(outfile, "w+") as out:
         para = readTemplate("vulnx")
         para = para.replace("<TITLE>", "Vulnerability Exploited:")
-        para = para.replace("<CONTENT>", escapeLatex(vulnx))
+        para = para.replace("<CONTENT>", escapeAndSimpleFormat(vulnx))
         out.write(para + "\n")
 
         para = readTemplate("para_inline")
         para = para.replace("<TITLE>", "Sytem Vulnerable:")
-        para = para.replace("<CONTENT>", escapeLatex(ip))
+        para = para.replace("<CONTENT>", escapeAndSimpleFormat(ip))
         out.write(para + "\n")
 
         lineCounter = -1
@@ -189,11 +211,11 @@ def parseMarkdown(host, ip, vulnx, content, outfile):
                 if ":" in line:
                     para = readTemplate("para_inline")
                     parts = line.strip(" #").split(":")
-                    para = para.replace("<TITLE>", escapeLatex(parts[0].strip(" #")))
-                    para = para.replace("<CONTENT>", escapeLatex(parts[1].strip(" #")))
+                    para = para.replace("<TITLE>", escapeAndSimpleFormat(parts[0].strip(" #")))
+                    para = para.replace("<CONTENT>", escapeAndSimpleFormat(parts[1].strip(" #")))
                 else:
                     para = readTemplate("para")
-                    para = para.replace("<TITLE>", escapeLatex(line.strip(" #")))
+                    para = para.replace("<TITLE>", escapeAndSimpleFormat(line.strip(" #")))
 
                 out.write(para + "\n")
                 continue
@@ -203,7 +225,7 @@ def parseMarkdown(host, ip, vulnx, content, outfile):
                 else:
                     image = readTemplate("image_ca[t]")
                     capt = re.split("\[|\]", line)[1]
-                    image = image.replace("<CAPTION>", escapeLatex(capt.strip(" ")))
+                    image = image.replace("<CAPTION>", escapeAndSimpleFormat(capt.strip(" ")))
 
                 path = re.split("\(|\)", line)[1]
                 path = os.path.join(hostsPath, host, path.strip(" "))
@@ -220,7 +242,7 @@ def parseMarkdown(host, ip, vulnx, content, outfile):
                 if lineCounter >= 1 and lastWasPlainText + 2 == lineCounter and content[lineCounter - 1].strip(" ") == "":
                     out.write("\\\\[0.5em]\n")
                 lastWasPlainText = lineCounter
-                out.write(escapeLatex(line.strip(" ")) + "\n")
+                out.write(escapeAndSimpleFormat(line.strip(" ")) + "\n")
 
 
 def writeFiles(settings, hosts):

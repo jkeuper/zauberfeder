@@ -31,8 +31,8 @@ rooted: true
 vulnx: 'SomeWebService <= 1.3.3 Directory Traversal RCE (CVE-2001-10000)
 ---
 ```
-6. Write your report, using headers "##", code blocks and images. 
-(TODO: hyperlinks, bold/italic/red, ...)
+6. Write your report, using headers "##", formatting bold/italic, code blocks and images. 
+(TODO: hyperlinks)
 7. Update your user info in the settings.md in the root of the project.
 8. Add the new machine to hosts in the settings.md.
 9. Run generate.py
@@ -55,8 +55,12 @@ to mark line 1, 3 to 5 and 10:
 {1,3-5,10}
 ```
 
+Bold and italic is implemented very simply. Multi-line formatting won't work.
+Nested bold AND italic won't work properly when starting or ending at the same
+location.
+
 ## Todo
-Add support for hyperlinks, bold/italic.
+Add support for hyperlinks
 
 Supports up to 10 machines now. Should be using loops in LaTeX...
 

@@ -2,7 +2,7 @@
 fullname: "Someone Student"
 firstname: "Someone"
 osid: "OS-XXXXX"
-version: "v0.1"
+version: "v1.0"
 email: "mailme@example.com"
 hosts: "example, DeepThought"
 ---

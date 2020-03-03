@@ -66,9 +66,11 @@ Nmap done: 1 IP address (1 host up) scanned in 107.01 seconds
 Raw packets sent: 85444 (3.760MB) | Rcvd: 74052 (2.979M
 ```
 ## Check the robots.txt
+The robots.txt file shows some interesting urls.
 ![](screenshot.png)
 
 ## Check the url /SomeWebService/
+The url reveals a web application.
 ![](screenshot.png)
 
 ## Check version
@@ -90,6 +92,7 @@ Which results in a reverse shell connecting back to our machine
 ![](screenshot.png)
 
 ## Proof
+Here we are able to get the proof.txt.
 ![](screenshot.png)
 
 

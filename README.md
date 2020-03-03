@@ -32,7 +32,6 @@ vulnx: 'SomeWebService <= 1.3.3 Directory Traversal RCE (CVE-2001-10000)
 ---
 ```
 6. Write your report, using headers "##", formatting bold/italic, code blocks and images. 
-(TODO: hyperlinks)
 7. Update your user info in the settings.md in the root of the project.
 8. Add the new machine to hosts in the settings.md.
 9. Run generate.py
@@ -60,11 +59,11 @@ Nested bold AND italic won't work properly when starting or ending at the same
 location.
 
 ## Todo
-Add support for hyperlinks
-
 Supports up to 10 machines now. Should be using loops in LaTeX...
 
-Update the fonts to match the OSCP report.
+Minor things I could use some help with: 
+* renaming "Contents" to "Table of Contents"
+* numbering of sections should be "1.0", not "1". Also in TOC.
 
 ## How does it work?
 This project is based on the LaTeX to PDF from: https://github.com/ucki/zauberfeder/

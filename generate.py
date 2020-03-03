@@ -80,6 +80,26 @@ def escapeAndSimpleFormat(line):
     line = line.replace("{", "\\{")
     line = line.replace("}", "\\}")
 
+    if "<" in line:
+        for word in line.split(" "):
+            if word.startswith("<") and word.endswith(">"):
+                url = readTemplate("urlplain")
+                url = url.replace("<CONTENT>", word.strip("<>"))
+                line = line.replace(word, url) 
+
+    if "[" in line:
+        index = line.index("[")
+        indexEnd = line.index("]", index)
+        if line[indexEnd+1] == "(":
+            otherEnd = line.index(")", indexEnd)
+            if indexEnd > 0 and otherEnd > 0:
+                caption = line[index+1: indexEnd]
+                content = line[indexEnd+2: otherEnd]
+                template = readTemplate("url")
+                template = template.replace("<CAPTION>", caption)
+                template = template.replace("<CONTENT>", content)
+                line = line.replace(line[index: otherEnd+1], template)
+ 
     if re.search(" [*_]+[A-Z-a-z0-9]", line):
         splitted = re.split("\.| ", line)
         for word in splitted:
@@ -93,9 +113,9 @@ def escapeAndSimpleFormat(line):
                     line = line.replace(word, "\\textbf{"+word[2:-2]+"}")
             else:
                 if len(prefix) == 1:
-                    line = line.replace(word, "\\textit{"+word[1:])
+                    line = line.replace(word, "\\textit{"+word[1:]+"}")
                 elif len(prefix) == 2:
-                    line = line.replace(word, "\\textbf{"+word[2:])
+                    line = line.replace(word, "\\textbf{"+word[2:]+"}")
 
                 for subword in splitted:
                     if subword.endswith(prefix):
@@ -302,7 +322,7 @@ def writeFiles(settings, hosts):
                             out.write("\\renewcommand{\\udpports"+chr(index)+"}{" + getValue(line) + "}\n")
                         if line.lower().startswith("vulnx"):
                             vulnx = getValue(line)
-                            out.write("\\renewcommand{\\vulnx"+chr(index)+"}{" + vulnx + "}\n")
+                            out.write("\\renewcommand{\\vulnx"+chr(index)+"}{" + escapeAndSimpleFormat(vulnx) + "}\n")
                         if line.lower().startswith("rooted"):
                             rootedcount += 1
 

@@ -57,6 +57,7 @@
 \newcommand{\machinecount}{}
 \newcommand{\rootedcount}{}
 
+
 %---------------------------------------------------------------------------------
 %------------------------- Set the variables for the Mainpage here ---------------
 %---------------------------------------------------------------------------------
@@ -69,10 +70,9 @@
 %---------------------------------------------------------------------------------
 %------------------------- Create title page -------------------------------------
 %---------------------------------------------------------------------------------
-\title{{\textbf{\fontsize{40}{48}\selectfont Offensive Security}}\fontsize{32}{36}\selectfont\\ Penetration Test Report for\\Internal Lab and Exam}
-\author{\vspace{0.5cm}\\[0.2em]\large\email\\[0.5em]\Large OSID: \osid \vspace{1.7cm}}
-\date{\vspace{7cm}\today}
-\date{\Large $\copyright$ \\[1em] \small All rights reserved to Offensive Security, 2016\\[0.5em] No part of this publication, in whole or in part, may be reproduced, copied, transferred or any other right reserved to its copyright owner, including photocopying and all other copying, any transfer or transmission using any network or other means of communication, any broadcast for distant learning, in any form or by any means such as any information storage, transmission or retrieval system, without prior written permission from Offensive Security.
+\title{\vspace{0.7cm}{\color{colortitle}\caladea\fontsize{48}{57}\selectfont Offensive Security}\color{colortitle}\caladea\fontsize{36}{33}\selectfont\\ Penetration Test Report for\\Internal Lab and Exam}
+\author{\vspace{0.1cm}\\[0.2em]\Large\email\\[0.5em]\caladea\LARGE OSID: \osid \vspace{1.2cm}}
+\date{\vspace{0.1cm}\Large $\copyright$ \\[2.5em] \scriptsize All rights reserved to Offensive Security, 2016\\[0.7em]\doublespacing No part of this publication, in whole or in part, may be reproduced, copied, transferred or any other right reserved to its copyright owner, including photocopying and all other copying, any transfer or transmission using any network or other means of communication, any broadcast for distant learning, in any form or by any means such as any information storage, transmission or retrieval system, without prior written permission from Offensive Security.
 }
 \pretitle{%
   \begin{center}
@@ -81,7 +81,7 @@
 \posttitle{
   \par\noindent\rule{\textwidth}{0.6pt}
   \normalsize
-  \\[0.2em] \version
+  \\[1.4em] \version
   \end{center}
 }
 \preauthor{%
@@ -95,6 +95,7 @@
   \includegraphics [width=0.5\textwidth]{./images/title_offsec.png}
   \end{center}
 }
+
 \begin{document}
 %---------------------------------------------------------------------------------
 %------------------------- Print title page --------------------------------------
@@ -104,10 +105,12 @@
 %---------------------------------------------------------------------------------
 %------------------------- Print table of contents -------------------------------
 %---------------------------------------------------------------------------------
+% \newgeometry{right=3.0cm,left=3.0cm, top=4.5cm, bottom=2.4cm, headsep=0.5cm, headheight=2.5cm}
 % Attention: Document might need some runs to get all indexes etc right .. usual LaTeX stuff :)
 \tableofcontents
 \pagebreak
 
+% \newgeometry{right=3.0cm,left=3.0cm, top=4.5cm, bottom=2.4cm, headsep=0.5cm, headheight=2.5cm}
 %---------------------------------------------------------------------------------
 %------------ Here are the hosts, ------------------------------------------------
 %------------ just add in the same scheme after you coppied the example folder ---

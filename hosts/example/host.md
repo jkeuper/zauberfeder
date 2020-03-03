@@ -2,7 +2,7 @@
 ip: '10.11.1.1'
 tcpports: '1, 2, 3, 4'
 udpports: '5, 6, 7, 8'
-vulnx: 'SomeWebService &lt;= 1.3.3 Directory Traversal RCE (CVE-2001-10000)'
+vulnx: 'SomeWebService &lt;= 1.3.3  RCE (CVE-2001-10000)'
 rooted: true
 ---
 

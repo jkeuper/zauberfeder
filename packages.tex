@@ -1,8 +1,5 @@
 %Seitenränder definieren
-\usepackage[right=2.5cm,left=2.5cm, bottom=2.5cm, top=4.5cm, headsep=0.5cm, headheight=2.5cm]{geometry}
-%\usepackage[right=2.75cm,left=2.75cm, bottom=2.5cm, top=6.0cm, footskip=2.1cm, headsep=0.5cm, headheight=1.5cm]{geometry}
-%\usepackage[right=2.75cm,left=2.75cm, bottom=3.9cm, top=4.0cm, footskip=2.1cm, headsep=0.0cm, headheight=2.5cm]{geometry}
-%\usepackage[right=2.75cm,left=2.75cm, bottom=3.9cm, top=2.1cm, footskip=2.1cm, voffset=3.5cm, headheight=2.0cm, headsep=0.5cm]{geometry}
+\usepackage[right=3.0cm,left=3.0cm, bottom=2.0cm, top=3.5cm, headsep=0.5cm, headheight=1.5cm]{geometry}
 \usepackage[utf8x]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{palatino}
@@ -23,6 +20,9 @@
 %Force figure to be placed “HERE”
 \usepackage{float} 
 
+\usepackage{caladea}
+}
+
 %Use a monospace font in lstlistings
 %Bera Mono is a version of Bitstream Vera Mono slightly enhanced for use with TeX.
 \usepackage[scaled=0.80]{beramono}
@@ -36,6 +36,11 @@
 {0pt}
 {\LARGE}
 \titlespacing*{\chapter}{0pt}{0pt}{82pt}
+\titleformat{\section}{\bfseries\Large}{\arabic{section}\quad}{0pt}{}
+\titleformat{\subsection}{\bfseries\Large}{\arabic{section}.\arabic{subsection}\quad}{0pt}{}
+\titleformat*{\section}{\caladea\large\bfseries\color{colorsection}}
+\titleformat*{\subsection}{\caladea\large\bfseries\color{colortitle}}
+
 
 %Csv -> Latex
 \usepackage{csvsimple}
@@ -71,12 +76,16 @@
 
 \usepackage{color}
 
+\definecolor{colortitle}{rgb}{0.09,0.216,0.369}
+\definecolor{colorvulnx}{rgb}{0.31,0.506,0.741}
+\definecolor{colorsection}{rgb}{0.059,0.145,0.247}
 \definecolor{color0}{rgb}{0,0,0}% black
 \definecolor{color1}{rgb}{0.22,0.45,0.70}% light blue
 \definecolor{color2}{rgb}{0.45,0.45,0.45}% dark grey
 \definecolor{mygreen}{rgb}{0,0.6,0}
 \definecolor{mygray}{rgb}{0.5,0.5,0.5}
 \definecolor{myblue}{rgb}{0.0, 0.53, 0.74}
+\definecolor{colorurl}{rgb}{0.0, 0.26, 0.37}
 \definecolor{codebackground}{rgb}{0.9, 0.9, 0.9}
 \definecolor{code}{rgb}{0, 0, 0}
 \definecolor{codechanged}{rgb}{0.8, 0.0, 0.0}
@@ -121,7 +130,7 @@
     citecolor=black,
     filecolor=black,
     linkcolor=black,
-    urlcolor=black
+    urlcolor=colorurl
 }
 
 \usepackage{fancyhdr}
@@ -139,4 +148,6 @@
 
 \renewcommand{\footrulewidth}{0.0pt} % Create a rule above the page number
 \renewcommand{\headrulewidth}{0.0pt} 
-\fancyfoot[R]{\textcolor{color1}\thepage  \textcolor{color2}{/\pageref{LastPage}}}
+% \fancyfoot[R]{\textcolor{color1}\thepage  \textcolor{color2}{/\pageref{LastPage}}}
+
+

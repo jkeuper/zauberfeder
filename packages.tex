@@ -38,8 +38,10 @@
 \titlespacing*{\chapter}{0pt}{0pt}{82pt}
 \titleformat{\section}{\bfseries\Large}{\arabic{section}\quad}{0pt}{}
 \titleformat{\subsection}{\bfseries\Large}{\arabic{section}.\arabic{subsection}\quad}{0pt}{}
+\titleformat{\subsubsection}{\bfseries\Large}{\arabic{section}.\arabic{subsection}\quad}{0pt}{}
 \titleformat*{\section}{\caladea\large\bfseries\color{colorsection}}
 \titleformat*{\subsection}{\caladea\large\bfseries\color{colortitle}}
+\titleformat*{\subsubsection}{\caladea\large\bfseries\color{colortitle}}
 
 
 %Csv -> Latex
@@ -142,12 +144,23 @@
 
 %\fancyhead[R]{\small{\leftmark}}
 \fancyhead{
-  \includegraphics [width=1.0\textwidth]{./images/header_offsec.png}
+  \includegraphics [width=1.0\textwidth]{./out/header_offsec.png}
 }
 \renewcommand{\sectionmark}[1]{\markboth{#1}{}}
 
-\renewcommand{\footrulewidth}{0.0pt} % Create a rule above the page number
+\renewcommand{\footrulewidth}{0.02pt} % Create a rule above the page number
 \renewcommand{\headrulewidth}{0.0pt} 
-% \fancyfoot[R]{\textcolor{color1}\thepage  \textcolor{color2}{/\pageref{LastPage}}}
+\fancyfoot[R]{\textcolor{color1}\thepage  \textcolor{color2}{/\pageref{LastPage}}}
+
+\fancypagestyle{empty}
+{
+   \fancyhf{}
+   \fancyfoot[C]{\footnotesize Page \thepage\ of \pageref{LastPage}}
+    \renewcommand{\footrulewidth}{0.02pt} % Create a rule above the page number
+}
+\fancypagestyle{plain}{%
+  \fancyfoot{} % clear all footer fields
+  \renewcommand{\footrulewidth}{0.00pt} % Create a rule above the page number
+}
 
 

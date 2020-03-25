@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
-hostsPath = "./hosts/"
 templatesPath = "./templates/"
 
 import os
 import re
+import sys
+import glob
+import shutil
 import subprocess
 import HTMLParser
 
@@ -13,7 +15,8 @@ def getValue(line):
     return line[index+1:].strip(" '\"")
 
 def readTemplate(name):
-    templatefile = os.path.join(templatesPath, name + ".tex")
+    curpath = os.path.dirname(os.path.abspath(__file__))
+    templatefile = os.path.join(curpath, templatesPath, name + ".tex")
     with open(templatefile) as f:
         content = f.readlines()
         # remove whitespace characters like `\n` at the end of each line
@@ -37,18 +40,24 @@ class Settings:
                 if  line.startswith("---"):
                     break
 
-                if line.lower().startswith("fullname"):
+                if line.lower().startswith("fullname:"):
                     self._fullname = getValue(line)
-                elif line.lower().startswith("firstname"):
+                elif line.lower().startswith("firstname:"):
                     self._firstname = getValue(line)
-                elif line.lower().startswith("osid"):
+                elif line.lower().startswith("osid:"):
                     self._osid = getValue(line)
-                elif line.lower().startswith("version"):
+                elif line.lower().startswith("version:"):
                     self._version = getValue(line)
-                elif line.lower().startswith("email"):
+                elif line.lower().startswith("email:"):
                     self._email = getValue(line)
-                elif line.lower().startswith("hosts"):
+                elif line.lower().startswith("hosts:"):
                     self._hosts = [x.strip() for x in getValue(line).split(",")]
+                elif line.lower().startswith("hostspath:"):
+                    self._hostspath = os.path.expanduser(getValue(line))
+                elif line.lower().startswith("exercisespath:"):
+                    self._exercisespath = os.path.expanduser(getValue(line))
+                elif line.lower().startswith("outputfile:"):
+                    self._outputfile = os.path.expanduser(getValue(line))
 
 def parseHightlights(line):
     res = []
@@ -169,7 +178,7 @@ def parseLists(content):
     template = readTemplate(listTemplate)
     return template.replace("<CONTENT>", result.strip())
 
-def parseMarkdown(host, ip, vulnx, content, outfile):
+def parseMarkdown(hostspath, host, ip, vulnx, content, outfile):
     buf = ""
     bufArr = []
     foundCodeStart = False
@@ -248,7 +257,7 @@ def parseMarkdown(host, ip, vulnx, content, outfile):
                     image = image.replace("<CAPTION>", escapeAndSimpleFormat(capt.strip(" ")))
 
                 path = re.split("\(|\)", line)[1]
-                path = os.path.join(hostsPath, host, path.strip(" "))
+                path = os.path.join(hostspath, host, path.strip(" "))
                 image = image.replace("<PATH>", path)
                 out.write(image + "\n")
                 continue
@@ -275,6 +284,13 @@ def writeFiles(settings, hosts):
     if not os.path.exists("out"):
         os.makedirs("out")
 
+    curpath = os.path.dirname(os.path.abspath(__file__))
+    shutil.copy(os.path.join(curpath, "packages.tex"), "./out/")
+    shutil.copy(os.path.join(curpath, "templates", "intro.tex"), "./out/")
+
+    for imgfile in glob.glob(os.path.join(curpath, "images", "*")):
+        shutil.copy(imgfile, "./out/")
+
     with open("out/hosts.tex","w+") as outhosts:
         with open("out/settings.tex","w+") as out:
             out.write("\\renewcommand{\\fullname}{" + settings._fullname + "}\n")
@@ -287,7 +303,7 @@ def writeFiles(settings, hosts):
                 machinecount += 1
                 index += 1
         
-                textfile = os.path.join(hostsPath, host, "host.md")
+                textfile = os.path.join(settings._hostspath, host, "report.md")
                 genfile = os.path.join("out", host+".gen.tex")
                 
                 outhosts.write("\\input{"+genfile+"}\n")
@@ -310,7 +326,7 @@ def writeFiles(settings, hosts):
                             continue
                         if  line.startswith("---"):
                             rest = content[linecount:]
-                            parseMarkdown(host, ipaddress, vulnx, rest, genfile)
+                            parseMarkdown(settings._hostspath, host, ipaddress, vulnx, rest, genfile)
                             break
                         if line.lower().startswith("ip"):
                             ipaddress = getValue(line)
@@ -326,7 +342,7 @@ def writeFiles(settings, hosts):
                         if line.lower().startswith("rooted"):
                             rootedcount += 1
 
-                textfile = os.path.join(hostsPath, host, "local.md")
+                textfile = os.path.join(settings._hostspath, host, "local.md")
                 genfile = os.path.join("out", host+"_local.gen.tex")
                 vulnx = ""
                 foundStart = False
@@ -346,7 +362,7 @@ def writeFiles(settings, hosts):
                                 continue
                             if  line.startswith("---"):
                                 rest = content[linecount:]
-                                parseMarkdown(host, ipaddress, vulnx, rest, genfile)
+                                parseMarkdown(settings._hostspath, host, ipaddress, vulnx, rest, genfile)
                                 break
                             if line.lower().startswith("vulnx"):
                                 vulnx = getValue(line)
@@ -355,18 +371,32 @@ def writeFiles(settings, hosts):
             out.write("\\renewcommand{\\rootedcount}{" + str(rootedcount) + "}\n")
             out.write("\\renewcommand{\\ipaddresses}{" + (", ".join(ipaddresses)) + "}\n")
 
-def executePdflatex():
-    subprocess.call(['pdflatex', '--interaction=batchmode', 'maindocument.tex'])
+def executePdflatex(outputfile):
+    directory = os.path.dirname(outputfile)
+    filename = os.path.basename(outputfile)
+    jobname = os.path.splitext(filename)[0]
+    curpath = os.path.dirname(os.path.abspath(__file__))
+    maindocument = os.path.join(curpath, "maindocument.tex")
+
+    args = ['pdflatex', 
+            '--interaction=batchmode', 
+            #'-output-directory='+directory, 
+            '-jobname='+jobname,
+            maindocument]
+    print(args)
+    subprocess.call(args)
     print "See maindocument.log for more information."
 
 def main():
     """
     """
-    settings = Settings("settings.md")
+    if len(sys.argv) <= 1:
+        print "Please specify your settings MD file."
+    else:
+        settings = Settings(sys.argv[1])
 
-    writeFiles(settings, settings._hosts)
-    executePdflatex()
-
+        writeFiles(settings, settings._hosts)
+        executePdflatex(settings._outputfile)
 
 if __name__ == "__main__":
     main()

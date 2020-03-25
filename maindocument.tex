@@ -66,7 +66,7 @@
 %---------------------------------------------------------------------------------
 %------------------------- Include the list of used packages ---------------------
 %---------------------------------------------------------------------------------
-\input{packages.tex}
+\input{./out/packages.tex}
 %---------------------------------------------------------------------------------
 %------------------------- Create title page -------------------------------------
 %---------------------------------------------------------------------------------
@@ -92,7 +92,7 @@
   \end{center}
   \begin{center}
   \LARGE
-  \includegraphics [width=0.5\textwidth]{./images/title_offsec.png}
+  \includegraphics [width=0.5\textwidth]{./out/title_offsec.png}
   \end{center}
 }
 
@@ -105,17 +105,17 @@
 %---------------------------------------------------------------------------------
 %------------------------- Print table of contents -------------------------------
 %---------------------------------------------------------------------------------
-% \newgeometry{right=3.0cm,left=3.0cm, top=4.5cm, bottom=2.4cm, headsep=0.5cm, headheight=2.5cm}
+\newgeometry{right=3.0cm,left=3.0cm, top=4.5cm, bottom=2.4cm, headsep=0.5cm, headheight=2.5cm}
 % Attention: Document might need some runs to get all indexes etc right .. usual LaTeX stuff :)
 \tableofcontents
 \pagebreak
 
-% \newgeometry{right=3.0cm,left=3.0cm, top=4.5cm, bottom=2.4cm, headsep=0.5cm, headheight=2.5cm}
+%\newgeometry{right=3.0cm,left=3.0cm, top=4.5cm, bottom=2.4cm, headsep=0.5cm, headheight=2.5cm}
 %---------------------------------------------------------------------------------
 %------------ Here are the hosts, ------------------------------------------------
 %------------ just add in the same scheme after you coppied the example folder ---
 %---------------------------------------------------------------------------------
-\input{./templates/intro.tex}
+\input{./out/intro.tex}
 \input{./out/hosts.tex}
 
 % \input{./hosts/example/host.tex}

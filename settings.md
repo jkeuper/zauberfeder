@@ -7,5 +7,5 @@ email: "mailme@example.com"
 hostspath: "~/Repos/zauberfeder/hosts"
 hosts: "example, DeepThought"
 exercisespath: "~/Report/zauberfeder/"
-outputfile: "~/Report/zauberfeder/maindocument.pdf"
+outputfile: "maindocument.pdf"
 ---

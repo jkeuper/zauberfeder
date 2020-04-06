@@ -25,6 +25,8 @@ def readTemplate(name):
 
 class Settings:
     def __init__(self, textfile):
+        self._exercisespath = None
+
         with open(textfile) as f:
             content = f.readlines()
             # remove whitespace characters like `\n` at the end of each line
@@ -82,12 +84,21 @@ def escapeAndSimpleFormat(line):
     html = HTMLParser.HTMLParser()
     line = html.unescape(line)
     # \& \% \$ \# \_ \{ \}
+
+    #line = line.replace("\\", "\\textbackslash")
+    #line = line.replace("~", "\\textasciitilde")
+
+    line = line.replace("\\", "\\\\")
+
     line = line.replace("&", "\\&")
     line = line.replace("%", "\\%")
     line = line.replace("$", "\\$")
     line = line.replace("#", "\\#")
     line = line.replace("{", "\\{")
     line = line.replace("}", "\\}")
+
+    #line = line.replace("\\textbackslash", "\\{textbackslash}")
+    #line = line.replace("\\extasciitilde", "\\{textasciitilde}")
 
     if "<" in line:
         for word in line.split(" "):
@@ -178,11 +189,11 @@ def parseLists(content):
     template = readTemplate(listTemplate)
     return template.replace("<CONTENT>", result.strip())
 
-def parseMarkdown(hostspath, host, ip, vulnx, content, outfile):
-    buf = ""
-    bufArr = []
-    foundCodeStart = False
-    foundListStart = False
+def parseExerciseMarkdown(basepath, content, outfile):
+    with open(outfile, "w+") as out:
+        processMarkdown(basepath, content, out, True)
+
+def parseHostMarkdown(hostspath, host, ip, vulnx, content, outfile):
     with open(outfile, "w+") as out:
         para = readTemplate("vulnx")
         para = para.replace("<TITLE>", "Vulnerability Exploited:")
@@ -194,49 +205,68 @@ def parseMarkdown(hostspath, host, ip, vulnx, content, outfile):
         para = para.replace("<CONTENT>", escapeAndSimpleFormat(ip))
         out.write(para + "\n")
 
-        lineCounter = -1
-        codeLineCounter = -1
-        lastWasPlainText = -1
-        for line in content:
-            lineCounter += 1
+        basepath = os.path.join(hostspath, host)
 
-            if line.startswith("```"):
-                if not foundCodeStart:
-                    foundCodeStart = True
-                    codeLineCounter = 0
-                    highlights = parseHightlights(line)
-                    continue
-                else:
-                    code = readTemplate("code")
-                    code = code.replace("<CODE>", buf.strip(" \n"))
-                    out.write(code + "\n")
-                    foundCodeStart = False
-                    codeLineCounter = -1
-                    buf = ""
-                    continue
-            if foundCodeStart:
-                codeLineCounter += 1 # please please note, line numbers are ONE based, not ZERO!
-                if needsHighlight(codeLineCounter, highlights):
-                    buf += "**LINECHANGED@" + line + "@LINECHANGED**"+ "\n"
-                else:
-                    buf += line + "\n"
+        processMarkdown(basepath, content, out)
+
+def processMarkdown(basepath, content, out, useSections = False):
+    buf = ""
+    bufArr = []
+    foundCodeStart = False
+    foundListStart = False
+
+    lineCounter = -1
+    codeLineCounter = -1
+    lastWasPlainText = -1
+    for line in content:
+        lineCounter += 1
+
+        if line.startswith("```"):
+            if not foundCodeStart:
+                foundCodeStart = True
+                codeLineCounter = 0
+                highlights = parseHightlights(line)
                 continue
-
-
-            if re.search("^[0-9]+\. |^[*+\-] ", line.strip(" ")):
-                if not foundListStart:
-                    foundListStart = True
-                    bufArr = []
-                bufArr.append(line)
+            else:
+                code = readTemplate("code")
+                code = code.replace("<CODE>", buf.strip(" \n"))
+                out.write(code + "\n")
+                foundCodeStart = False
+                codeLineCounter = -1
+                buf = ""
                 continue
+        if foundCodeStart:
+            codeLineCounter += 1 # please please note, line numbers are ONE based, not ZERO!
+            if needsHighlight(codeLineCounter, highlights):
+                buf += "**LINECHANGED@" + line + "@LINECHANGED**"+ "\n"
+            else:
+                buf += line + "\n"
+            continue
 
-            if foundListStart:
-                if line.lower().startswith("#"):
-                    lists = parseLists(bufArr)
-                    out.write(lists + "\n")
-                    foundListStart = False
 
+        if re.search("^[0-9]+\. |^[*+\-] ", line.strip(" ")):
+            if not foundListStart:
+                foundListStart = True
+                bufArr = []
+            bufArr.append(line)
+            continue
+
+        if foundListStart:
             if line.lower().startswith("#"):
+                lists = parseLists(bufArr)
+                out.write(lists + "\n")
+                foundListStart = False
+
+        if line.lower().startswith("#"):
+            if useSections:
+                if line.lower().startswith("####"):
+                    para = readTemplate("subsubsubsect")
+                elif line.lower().startswith("###"):
+                    para = readTemplate("subsubsect")
+                else: # startswith("##" or "#"):
+                    para = readTemplate("subsect")
+                para = para.replace("<CONTENT>", escapeAndSimpleFormat(line.strip(" #")))
+            else:
                 if ":" in line:
                     para = readTemplate("para_inline")
                     parts = line.strip(" #").split(":")
@@ -246,33 +276,43 @@ def parseMarkdown(hostspath, host, ip, vulnx, content, outfile):
                     para = readTemplate("para")
                     para = para.replace("<TITLE>", escapeAndSimpleFormat(line.strip(" #")))
 
-                out.write(para + "\n")
-                continue
-            if line.lower().startswith("!["):
-                if line.lower().startswith("![]"):
-                    image = readTemplate("image")
-                else:
-                    image = readTemplate("image_ca[t]")
-                    capt = re.split("\[|\]", line)[1]
-                    image = image.replace("<CAPTION>", escapeAndSimpleFormat(capt.strip(" ")))
+            out.write(para + "\n")
+            continue
+        if line.lower().startswith("!["):
+            if line.lower().startswith("![]"):
+                image = readTemplate("image")
+            else:
+                image = readTemplate("image_ca[t]")
+                capt = re.split("\[|\]", line)[1]
+                image = image.replace("<CAPTION>", escapeAndSimpleFormat(capt.strip(" ")))
 
-                path = re.split("\(|\)", line)[1]
-                path = os.path.join(hostspath, host, path.strip(" "))
-                image = image.replace("<PATH>", path)
-                out.write(image + "\n")
-                continue
-            
-            if foundListStart:
-                if line.strip(" ") == "":
-                    lists = parseLists(bufArr)
-                    out.write(lists + "\n")
-                    foundListStart = False
-            elif not line.strip(" ") == "":
-                if lineCounter >= 1 and lastWasPlainText + 2 == lineCounter and content[lineCounter - 1].strip(" ") == "":
-                    out.write("\\\\[0.5em]\n")
-                lastWasPlainText = lineCounter
-                out.write(escapeAndSimpleFormat(line.strip(" ")) + "\n")
+            path = re.split("\(|\)", line)[1]
+            path = os.path.join(basepath, path.strip(" "))
+            image = image.replace("<PATH>", path)
+            out.write(image + "\n")
+            continue
+        
+        if foundListStart:
+            if line.strip(" ") == "":
+                lists = parseLists(bufArr)
+                out.write(lists + "\n")
+                foundListStart = False
+        elif not line.strip(" ") == "":
+            if lineCounter >= 1 and lastWasPlainText + 2 == lineCounter and content[lineCounter - 1].strip(" ") == "":
+                out.write("\\\\[0.5em]\n")
+            lastWasPlainText = lineCounter
+            out.write(escapeAndSimpleFormat(line.strip(" ")) + "\n")
 
+def sortedNicely(l):
+    """ Sorts the given iterable in the way that is expected.
+ 
+    Required arguments:
+    l -- The iterable to be sorted.
+ 
+    """
+    convert = lambda text: int(text) if text.isdigit() else text
+    alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
+    return sorted(l, key = alphanum_key)
 
 def writeFiles(settings, hosts):
     machinecount = 0
@@ -326,7 +366,7 @@ def writeFiles(settings, hosts):
                             continue
                         if  line.startswith("---"):
                             rest = content[linecount:]
-                            parseMarkdown(settings._hostspath, host, ipaddress, vulnx, rest, genfile)
+                            parseHostMarkdown(settings._hostspath, host, ipaddress, vulnx, rest, genfile)
                             break
                         if line.lower().startswith("ip"):
                             ipaddress = getValue(line)
@@ -362,11 +402,38 @@ def writeFiles(settings, hosts):
                                 continue
                             if  line.startswith("---"):
                                 rest = content[linecount:]
-                                parseMarkdown(settings._hostspath, host, ipaddress, vulnx, rest, genfile)
+                                parseHostMarkdown(settings._hostspath, host, ipaddress, vulnx, rest, genfile)
                                 break
                             if line.lower().startswith("vulnx"):
                                 vulnx = getValue(line)
-        
+
+            if settings._exercisespath:
+                shutil.copy(os.path.join(curpath, "templates", "exercises.tex"), "./out/")
+                outhosts.write("\\input{out/exercises.tex}\n")
+
+
+                fileList = []
+                for root, dirs, files in os.walk(settings._exercisespath):
+                    for file in files:
+                        if file.endswith("report.md"):
+                            textfile = os.path.join(root, file)
+                            fileList.append(textfile)
+
+                fileList = sortedNicely(fileList)
+                for textfile in fileList:
+                    escapedName = os.path.relpath(textfile, settings._exercisespath)
+                    escapedName = escapedName.replace("/", "_")
+                    escapedName = escapedName.replace(".", "_")
+
+                    genfile = os.path.join("out", escapedName+".gen.tex")
+                    foundStart = False
+                    outhosts.write("\\input{"+genfile+"}\n")
+                    with open(textfile) as f:
+                        content = f.readlines()
+                        # remove whitespace characters like `\n` at the end of each line
+                        content = [x.strip("\n") for x in content]
+                        parseExerciseMarkdown(root, content, genfile)
+            
             out.write("\\renewcommand{\\machinecount}{" + str(machinecount) + "}\n")
             out.write("\\renewcommand{\\rootedcount}{" + str(rootedcount) + "}\n")
             out.write("\\renewcommand{\\ipaddresses}{" + (", ".join(ipaddresses)) + "}\n")

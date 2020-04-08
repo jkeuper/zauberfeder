@@ -432,7 +432,7 @@ def writeFiles(settings, hosts):
                         content = f.readlines()
                         # remove whitespace characters like `\n` at the end of each line
                         content = [x.strip("\n") for x in content]
-                        parseExerciseMarkdown(root, content, genfile)
+                        parseExerciseMarkdown(os.path.dirname(textfile), content, genfile)
             
             out.write("\\renewcommand{\\machinecount}{" + str(machinecount) + "}\n")
             out.write("\\renewcommand{\\rootedcount}{" + str(rootedcount) + "}\n")

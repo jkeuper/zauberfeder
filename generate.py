@@ -88,7 +88,7 @@ def escapeAndSimpleFormat(line):
     #line = line.replace("\\", "\\textbackslash")
     #line = line.replace("~", "\\textasciitilde")
 
-    line = line.replace("\\", "\\\\")
+    line = line.replace("\\", "\\char`\\\\")
 
     line = line.replace("&", "\\&")
     line = line.replace("%", "\\%")
@@ -209,7 +209,11 @@ def parseHostMarkdown(hostspath, host, ip, vulnx, content, outfile):
 
         processMarkdown(basepath, content, out)
 
-def processMarkdown(basepath, content, out, useSections = False):
+def processMarkdown(basepath, content, out, manualParagraphs = False):
+    """Processes the markdown in the specified file.
+    If manualParagraphs is True, the markdown section specifiers will be respected and treated as paragraphs.
+    Otherwise, all section specifiers will be treated equally as latex sections and appear in the ToC.
+    """
     buf = ""
     bufArr = []
     foundCodeStart = False
@@ -258,13 +262,15 @@ def processMarkdown(basepath, content, out, useSections = False):
                 foundListStart = False
 
         if line.lower().startswith("#"):
-            if useSections:
+            if manualParagraphs:
                 if line.lower().startswith("####"):
-                    para = readTemplate("subsubsubsect")
+                    para = readTemplate("para_level4")
                 elif line.lower().startswith("###"):
-                    para = readTemplate("subsubsect")
-                else: # startswith("##" or "#"):
-                    para = readTemplate("subsect")
+                    para = readTemplate("para_level3")
+                elif line.lower().startswith("##"):
+                    para = readTemplate("para_level2")
+                else:
+                    para = readTemplate("para_level1")
                 para = para.replace("<CONTENT>", escapeAndSimpleFormat(line.strip(" #")))
             else:
                 if ":" in line:
@@ -320,6 +326,8 @@ def writeFiles(settings, hosts):
 
     index = 64
     ipaddresses = []
+
+    print "Preparing output files..."
 
     if not os.path.exists("out"):
         os.makedirs("out")
@@ -445,6 +453,8 @@ def executePdflatex(outputfile):
     curpath = os.path.dirname(os.path.abspath(__file__))
     maindocument = os.path.join(curpath, "maindocument.tex")
 
+    print "Generating PDF..."
+
     args = ['pdflatex', 
             '--interaction=batchmode', 
             #'-output-directory='+directory, 
@@ -457,12 +467,20 @@ def executePdflatex(outputfile):
 def main():
     """
     """
-    if len(sys.argv) <= 1:
-        print "Please specify your settings MD file."
+    if len(sys.argv) == 1:
+        print "Usage:"
+        print "  generate.py <settings.md> [options]"
+        print
+        print "Options:"
+        print "  --pdf-only      Only generate the pdf from existing tex files (useful for manual finetuning)"
     else:
         settings = Settings(sys.argv[1])
 
-        writeFiles(settings, settings._hosts)
+        pdfonly = (len(sys.argv) > 2) and (sys.argv[2].lower() == "--pdf-only")
+
+        if not pdfonly:
+            writeFiles(settings, settings._hosts)
+
         executePdflatex(settings._outputfile)
 
 if __name__ == "__main__":

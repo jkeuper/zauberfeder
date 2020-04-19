@@ -209,6 +209,9 @@ def parseHostMarkdown(hostspath, host, ip, vulnx, content, outfile):
 
         processMarkdown(basepath, content, out)
 
+        # Insert a page break after each host for better overview
+        out.write("\\newpage")
+
 def processMarkdown(basepath, content, out, manualParagraphs = False):
     """Processes the markdown in the specified file.
     If manualParagraphs is True, the markdown section specifiers will be respected and treated as paragraphs.
@@ -388,7 +391,7 @@ def writeFiles(settings, hosts):
                             vulnx = getValue(line)
                             out.write("\\renewcommand{\\vulnx"+chr(index)+"}{" + escapeAndSimpleFormat(vulnx) + "}\n")
                         if line.lower().startswith("rooted"):
-                            rootedcount += 1
+                            rootedcount += 1                
 
                 textfile = os.path.join(settings._hostspath, host, "local.md")
                 genfile = os.path.join("out", host+"_local.gen.tex")
